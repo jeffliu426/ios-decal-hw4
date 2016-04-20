@@ -130,7 +130,18 @@ class PlayerViewController: UIViewController {
         let track = tracks[currentIndex]
         let url = NSURL(string: "https://api.soundcloud.com/tracks/\(track.id)/stream?client_id=\(clientID)")!
         // FILL ME IN
-    
+        if player.currentItem?.status != .ReadyToPlay {
+            let playerItem = AVPlayerItem(URL: url)
+            player.replaceCurrentItemWithPlayerItem(playerItem)
+            player.play()
+            loadTrackElements()
+        }
+        else if player.rate == 0 {
+            player.play()
+        }
+        else {
+            player.pause()
+        }
     }
     
     /* 
@@ -140,7 +151,18 @@ class PlayerViewController: UIViewController {
      * Remember to update the currentIndex
      */
     func nextTrackTapped(sender: UIButton) {
-    
+        if currentIndex + 1 < tracks.count {
+            currentIndex! += 1
+            let path = NSBundle.mainBundle().pathForResource("Info", ofType: "plist")
+            let clientID = NSDictionary(contentsOfFile: path!)?.valueForKey("client_id") as! String
+            let track = tracks[currentIndex]
+            let url = NSURL(string: "https://api.soundcloud.com/tracks/\(track.id)/stream?client_id=\(clientID)")!
+            let playerItem = AVPlayerItem(URL: url)
+            player.replaceCurrentItemWithPlayerItem(playerItem)
+            player.play()
+            loadTrackElements()
+        }
+        
     }
 
     /*
@@ -154,7 +176,21 @@ class PlayerViewController: UIViewController {
      */
 
     func previousTrackTapped(sender: UIButton) {
-    
+        if (currentIndex > 0 && player.currentTime().seconds < 3){
+            currentIndex! -= 1
+            let path = NSBundle.mainBundle().pathForResource("Info", ofType: "plist")
+            let clientID = NSDictionary(contentsOfFile: path!)?.valueForKey("client_id") as! String
+            let track = tracks[currentIndex]
+            let url = NSURL(string: "https://api.soundcloud.com/tracks/\(track.id)/stream?client_id=\(clientID)")!
+            let playerItem = AVPlayerItem(URL: url)
+            player.replaceCurrentItemWithPlayerItem(playerItem)
+            player.play()
+            loadTrackElements()
+        }
+        else {
+            player.seekToTime(kCMTimeZero)
+            player.play()
+        }
     }
     
     
